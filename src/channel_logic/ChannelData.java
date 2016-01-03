@@ -4,33 +4,36 @@ import com.google.common.eventbus.Subscribe;
 import events.DataAvailableBusEvent;
 import inputs.Input;
 
+import java.util.Arrays;
+
 public class ChannelData {
+    int lastPull = 0;                       // numer sampla z ostatniego pulla
     private int channelNumber;
-    RecentBuffer recentBuffer;              // Bufor najnowszych próbek
-    FileSaver fileSaver;                    // Obiekt zapisuj¹cy próbki do pliku
-    DataFilesManager dataFilesManager;      // Obiekt zarz¹dzaj¹cy zapisanymi plikami
+    CyclicBuffer cyclicBuffer;              // Bufor najnowszych prï¿½bek
+    FileSaver fileSaver;                    // Obiekt zapisujï¿½cy prï¿½bki do pliku
+    DataFilesManager dataFilesManager;      // Obiekt zarzï¿½dzajï¿½cy zapisanymi plikami
 
     // Publiczny konstruktor
     public ChannelData(int channelNumber){
       this.channelNumber = channelNumber;
     }
 
-    // Metoda pozawalaj¹ca ustawiæ bufor
-    public void setRecentBuffer(RecentBuffer recentBuffer) {
-        this.recentBuffer = recentBuffer;
+    // Metoda pozawalajï¿½ca ustawiï¿½ bufor
+    public void setCyclicBuffer(CyclicBuffer cyclicBuffer) {
+        this.cyclicBuffer = cyclicBuffer;
     }
 
-    // Metoda pozwalaj¹ca ustawiæ obiekt zapisuj¹cy próbki do pliku
+    // Metoda pozwalajï¿½ca ustawiï¿½ obiekt zapisujï¿½cy prï¿½bki do pliku
     public void setFileSaver(FileSaver fileSaver) {
         this.fileSaver = fileSaver;
     }
 
-    // Metoda pozwalaj¹ca ustawiæ obiekt zarz¹dzaj¹cy zapisanymi plikami
+    // Metoda pozwalajï¿½ca ustawiï¿½ obiekt zarzï¿½dzajï¿½cy zapisanymi plikami
     public void setDataFilesManager(DataFilesManager dataFilesManager) {
         this.dataFilesManager = dataFilesManager;
     }
 
-    // Metoda pozwalaj¹ca zarejestrowaæ kana³ do wejœcia
+    // Metoda pozwalajï¿½ca zarejestrowaï¿½ kanaï¿½ do wejï¿½cia
     public void registerToInput(Input input){
         input.register(this);
     }
@@ -38,8 +41,8 @@ public class ChannelData {
     @Subscribe
     public void listen(DataAvailableBusEvent busEvent){
         if(busEvent.getChannelNumber()==channelNumber){
-            int data[] = busEvent.getData();
-            recentBuffer.putData(data);
+            double data[] = busEvent.getData();
+            cyclicBuffer.putData(data);
         }
     }
 
@@ -51,7 +54,30 @@ public class ChannelData {
         this.channelNumber = channelNumber;
     }
 
-    public int[][] getBufferedSamples(){
-        return recentBuffer.getSamples();
+    public double[][] getAllBufferedSamples(){
+        return cyclicBuffer.getSamples();
+
     }
+
+    public double[][] getBufferedSamples(int sizeOfPuller) {
+        double[][] temp = cyclicBuffer.getSamples(sizeOfPuller);
+        int dif = temp.length-sizeOfPuller;
+        int [] filler = {-1,0};
+        if(dif<0){
+            double[][] temp2 = new double[-dif][2];
+            Arrays.fill(temp2,filler);
+            return concat(temp2,temp);
+        }
+        return temp;
+    }
+
+    public double[][] concat(double[][] a, double[][] b) {
+        int aLen = a.length;
+        int bLen = b.length;
+        double[][] c= new double[aLen+bLen][2];
+        System.arraycopy(a, 0, c, 0, aLen);
+        System.arraycopy(b, 0, c, aLen, bLen);
+        return c;
+    }
+
 }

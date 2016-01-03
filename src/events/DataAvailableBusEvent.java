@@ -5,8 +5,8 @@ package events;
  */
 public class DataAvailableBusEvent extends BusEvent {
     int channelNumber;
-    int[] data;
-    public DataAvailableBusEvent(int number, int[] data){
+    double[] data;
+    public DataAvailableBusEvent(int number, double[] data){
         channelNumber = number;
         this.data = data;
     }
@@ -15,7 +15,7 @@ public class DataAvailableBusEvent extends BusEvent {
         return channelNumber;
     }
 
-    public int[] getData() {
+    public double[] getData() {
         return data;
     }
 }

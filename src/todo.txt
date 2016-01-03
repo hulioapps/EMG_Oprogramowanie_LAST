@@ -1,0 +1,22 @@
+TODO
+krok dla FilterPipe
+
+
+dopisać ilość próbek od ostatniego pullowania dla cyclebuffer
+
+dopisać metodę zwracającą dodane próbki od ostatniego pullowania
+
+
+
+
+
+
+
+
+Commons do ArrayUtils np.reverse(int[] array)
+dsp-collection do generacji filtrów
+
+
+
+
+

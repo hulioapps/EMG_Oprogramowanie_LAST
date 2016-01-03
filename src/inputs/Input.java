@@ -20,5 +20,5 @@ public abstract class Input {
         eventBus.unregister(object);
     }
 
-    public abstract void post(int channelNumber,int [] data);
+    public abstract void post(int channelNumber,double[] data);
 }

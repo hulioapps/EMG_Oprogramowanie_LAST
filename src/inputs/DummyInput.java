@@ -8,7 +8,7 @@ import events.DataAvailableBusEvent;
 public class DummyInput extends Input{
 
     @Override
-    public void post(int chanelNumber,int[] data) {
+    public void post(int chanelNumber,double[] data) {
         eventBus.post(new DataAvailableBusEvent(chanelNumber,data));
     }
 
